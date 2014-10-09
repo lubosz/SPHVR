@@ -3,7 +3,7 @@ __author__ = 'Lubosz Sarnecki'
 from gi.repository import Graphene, Gdk
 import numpy
 import math
-from gst_opengl_editor.graphics import *
+from vrsink.graphics import *
 from numpy import array
 
 

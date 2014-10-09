@@ -4,8 +4,8 @@ from gi.repository import Gdk, Gst, Gtk, GdkX11, GstVideo, GstGL
 
 import signal
 
-from gst_opengl_editor.sinks import *
-from gst_opengl_editor.widgets import *
+from vrsink.sinks import *
+from vrsink.widgets import *
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 

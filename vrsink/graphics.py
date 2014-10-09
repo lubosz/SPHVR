@@ -4,7 +4,7 @@ import numpy
 from math import pi
 
 from OpenGL.GL import *
-from gst_opengl_editor.opengl import *
+from vrsink.opengl import *
 
 
 class Graphic():

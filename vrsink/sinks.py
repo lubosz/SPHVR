@@ -3,7 +3,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Gst, GstGL, Graphene
 
-from gst_opengl_editor.scene import *
+from vrsink.scene import *
 
 class GstOverlaySink(Gtk.DrawingArea):
     def __init__(self, name, w, h):

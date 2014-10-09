@@ -1,5 +1,5 @@
 from gi.repository import Gtk
-from gst_opengl_editor.scene import matrix_to_array
+from vrsink.scene import matrix_to_array
 
 
 class Slider(Gtk.Box):
