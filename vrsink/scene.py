@@ -105,32 +105,7 @@ class HandleActor():
         return matrix_to_array(model_matrix)
 
 
-class BoxActor():
-    def __init__(self, drag):
-        self.drag = drag
-
-    def is_clicked(self, click, handles):
-
-        from shapely.geometry import Point
-        from shapely.geometry.polygon import Polygon
-
-        point = Point(*click)
-        polygon = Polygon([handles["1BL"].position,
-                           handles["2TL"].position,
-                           handles["3TR"].position,
-                           handles["4BR"].position])
-
-        return polygon.contains(point)
-
-    def get_center(self, handles):
-        diagonal = array(handles["1BL"].position) - array(handles["3TR"].position)
-
-        center = array(handles["3TR"].position) + diagonal / 2.0
-
-        return center
-
-
-class TransformScene(Scene):
+class VRScene(Scene):
     def __init__(self):
         Scene.__init__(self)
 
@@ -155,7 +130,7 @@ class TransformScene(Scene):
         self.handles = list(self.corner_handles.values()) \
                        + list(self.edge_handles.values())
 
-        self.box_actor = BoxActor(self.translate)
+        #self.box_actor = BoxActor(self.translate)
         self.selected = False
         self.slider_box = None
         self.action = None
@@ -163,12 +138,6 @@ class TransformScene(Scene):
         self.zoom = 1.0
         self.set_zoom_matrix(self.zoom)
 
-    def on_scroll(self, sink, event):
-        deltas = event.get_scroll_deltas()
-        v = self.zoom_slider.get_value()
-        if deltas[0]:
-            v -= deltas[2] * 0.1 * self.zoom
-        self.zoom_slider.set_value(v)
 
     def set_zoom_matrix(self, zoom):
         self.zoom_matrix = Graphene.Matrix.alloc()
@@ -177,13 +146,6 @@ class TransformScene(Scene):
     def set_zoom(self, scale):
         self.zoom = scale.get_value()
         self.set_zoom_matrix(self.zoom)
-
-        self.reposition()
-
-    def deselect(self):
-        self.selected = False
-        # default
-        self.set_cursor(Gdk.CursorType.ARROW)
 
     def init_gl(self, context):
         Scene.init_gl(self, context)
@@ -199,22 +161,6 @@ class TransformScene(Scene):
             context, self.width, self.height, cairo_shader)
 
         self.init = True
-
-    def reposition(self):
-
-        matrix = numpy.dot(self.slider_box.mvp(), matrix_to_array(self.zoom_matrix))
-
-        distance1 = self.corner_handles["1BL"].distance_to(self.edge_handles["bottom"])
-        distance2 = self.corner_handles["2TL"].distance_to(self.edge_handles["left"])
-
-        if distance1 < 0.1 or distance2 < 0.1:
-            size = 10.0 * min(distance1, distance2)
-        else:
-            size = 1.0
-
-        for handle in self.handles:
-            handle.reposition(matrix, self.aspect())
-            handle.size = size
 
     def draw(self, sink, context, video_texture, w, h):
         if not self.init:
@@ -232,19 +178,6 @@ class TransformScene(Scene):
         context.clear_shader()
 
         return True
-
-    def get_rotation(self, event):
-        center = self.box_actor.get_center(self.corner_handles) * array([self.aspect(), 1])
-        click = array(self.relative_position(event)) * array([self.aspect(), 1])
-
-        distance = click - center
-        distance /= numpy.linalg.norm(distance)
-
-        axis = array([1, 0])
-
-        rot = math.atan2(distance[1], distance[0]) - math.atan2(axis[1], axis[0])
-
-        return math.degrees(-rot)
 
     def scale_width(self, event):
         scale_y = self.slider_box.sliders["scale-y"]
@@ -266,26 +199,3 @@ class TransformScene(Scene):
         distance = self.center_distance(event)
         scale_x.set(old_aspect * distance / math.sqrt(2))
         scale_y.set(distance / math.sqrt(2))
-
-    def rotate(self, event):
-        rotation = self.slider_box.sliders["rotation-z"]
-        rotation.set((self.oldrot + self.get_rotation(event)) % 360)
-
-    def translate(self, event):
-        pos = array(self.relative_position(event))
-
-        # drag cursor
-        self.set_cursor(Gdk.CursorType.FLEUR)
-
-        x = self.slider_box.sliders["translation-x"]
-        y = self.slider_box.sliders["translation-y"]
-
-        oldpos = array(self.oldpos)
-
-        translation = array([pos[0] * self.aspect(),
-                             - pos[1]])
-
-        translation /= self.zoom
-
-        x.set(oldpos[0] + translation[0])
-        y.set(oldpos[1] + translation[1])

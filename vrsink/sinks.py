@@ -27,7 +27,7 @@ class CairoGLSink(GstOverlaySink):
 
         self.gl_init = False
 
-        self.scene = TransformScene()
+        self.scene = VRScene()
 
         self.sink.connect("client-draw", self.scene.draw)
         self.sink.connect("client-reshape", self.scene.reshape)
