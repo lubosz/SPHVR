@@ -96,6 +96,13 @@ class GstOpenGLEditor():
         pause_button.connect("clicked", self.pause, pipeline, sink)
 
         window.add(outer_box)
+
+        from gi.repository import GdkPixbuf
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file("data/icon/sphvr.png")
+        theme = Gtk.IconTheme.get_default()
+        theme.add_builtin_icon("sphvr", 256, pixbuf)
+        window.set_icon_name("sphvr")
+
         window.show_all()
 
         sink.set_handle()
