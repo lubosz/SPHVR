@@ -20,8 +20,11 @@ class VideoGraphic(Graphic):
         Graphic.__init__(self)
 
     def init_gl(self, context):
-        self.shader = Shader(context, "simple.vert", "video.frag")
-        self.mesh = PlaneTriangleFan()
+        #self.shader = Shader(context, "simple.vert", "video.frag")
+        #self.mesh = PlaneTriangleFan()
+
+        self.shader = Shader(context, "no-uv.vert", "color.frag")
+        self.mesh = SphereTriangleStrip()
 
     def draw(self, video_texture, matrix):
         self.shader.use()

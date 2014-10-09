@@ -5,6 +5,7 @@ import numpy
 import math
 from vrsink.graphics import *
 from numpy import array
+from numpy import identity, dot
 
 
 def matrix_to_array(m):
@@ -16,6 +17,20 @@ def matrix_to_array(m):
                        m.get_value(x, 3)])
     return numpy.array(result, 'd')
 
+def print_matrix(m):
+  if type(m) == Graphene.Matrix:
+    for x in range(0, 4):
+      print("%.3f %.3f %.3f %.3f" % (m.get_value(x, 0),
+        m.get_value(x, 1),
+        m.get_value(x, 2),
+        m.get_value(x, 3)))
+  else:
+    for i in range(0, 4):
+      print("%.3f %.3f %.3f %.3f" % (m.column(i).x(),
+        m.column(i).y(),
+        m.column(i).z(),
+        m.column(i).w()))
+  print()
 
 class Scene():
     def __init__(self):
@@ -72,6 +87,7 @@ class VRScene(Scene):
 
         self.zoom = 1.0
         self.set_zoom_matrix(self.zoom)
+        self.init_projection()
 
     def set_zoom_matrix(self, zoom):
         self.zoom_matrix = Graphene.Matrix.alloc()
@@ -88,6 +104,36 @@ class VRScene(Scene):
 
         self.init = True
 
+    def get_projection(self):
+        projection = Graphene.Matrix()
+        projection.init_perspective(90.0, 4.0/3.0, 0.01, 100.0)
+        return matrix_to_array(projection)
+
+    def get_view(self):
+        eye = Graphene.Vec3()
+        center = Graphene.Vec3()
+        up = Graphene.Vec3()
+        eye.init(0, 0, 5)
+        center.init(0, 0, 0)
+        up.init(0, 1, 0)
+
+        view = Graphene.Matrix()
+        view.init_look_at(eye, center, up)
+        return matrix_to_array(view)
+
+    def init_projection(self):
+        #model = identity(4)
+
+        projection = self.get_projection()
+        view = self.get_view()
+        #vp = matrix_to_array(projection) * matrix_to_array(view)
+        #vp = np_projection * np_view
+        vp = dot(view, projection)
+        self.mvp = vp
+        #self.mvp = dot(model, vp)
+        #self.mvp = np_view
+        #print(self.mvp)
+
     def draw(self, sink, context, video_texture, w, h):
         if not self.init:
             return
@@ -98,7 +144,7 @@ class VRScene(Scene):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         context.clear_shader()
-        self.graphics["video"].draw(video_texture, matrix_to_array(self.zoom_matrix))
+        self.graphics["video"].draw(video_texture, self.mvp)
         context.clear_shader()
 
         return True

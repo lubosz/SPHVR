@@ -3,7 +3,7 @@ __author__ = 'Lubosz Sarnecki'
 from OpenGL.GL import *
 from gi.repository import GstGL
 import cairo
-
+from numpy import array
 
 class Mesh():
     def __init__(self, type):
@@ -40,21 +40,92 @@ class Mesh():
             glDisableVertexAttribArray(self.locations[name])
 
 
+class SphereTriangleStrip(Mesh):
+    def __init__(self):
+        #Mesh.__init__(self, GL_TRIANGLE_STRIP)
+        Mesh.__init__(self, GL_LINES)
+
+        stacks = 32
+        slices = 32
+        width = 1.0
+        height = 1.0
+        depth = 1.0
+        radius = 1.0
+        distance = 3.0
+
+        center = array([0, 0, 0])
+
+        positions = []
+        #thepos = array([])
+
+        from math import pi, sin, cos
+        from numpy import concatenate, add
+        from IPython import embed
+
+
+        #LEFT
+        for stack in range(0, stacks):
+            phi = pi / 2.0 - stack * pi / stacks
+            y = radius * sin(phi) * height
+            scale = -radius * cos(phi)
+
+            for slice in range(0, slices):
+                theta = slice * 2.0 * pi / slices
+                x = scale * sin(theta) * width + radius
+                z = scale * cos(theta) * depth
+
+                normal = array([x + distance, y, z])
+                positions += list(normal + center)
+
+        #RIGHT
+        for stack in range(0, stacks):
+            phi = pi / 2.0 - stack * pi / stacks
+            y = radius * sin(phi) * height
+            scale = -radius * cos(phi)
+
+            for slice in range(0, slices):
+                theta = slice * 2.0 * pi / slices
+                x = scale * sin(theta) * width - radius
+                z = scale * cos(theta) * depth
+
+                normal = array([x - distance, y, z])
+                positions += list(normal + center)
+
+
+        self.add("position", positions, 3)
+        #self.add("uv", positions, 2)
+
+        indices = []
+
+        for foo in range(0, int(len(positions) / 3)):
+            indices.append(foo)
+
+        print(len(positions))
+        print(len(positions) / 3)
+        print(len(indices))
+
+
+        self.set_index(indices)
+
+
 class PlaneTriangleFan(Mesh):
     def __init__(self):
         Mesh.__init__(self, GL_TRIANGLE_STRIP)
+        #Mesh.__init__(self, GL_LINES)
         self.add(
             "position", [
                 -1, 1, 0, 1,
                 1, 1, 0, 1,
                 1, -1, 0, 1,
                 -1, -1, 0, 1], 4)
+
         self.add(
             "uv", [
                 0.0, 0.0,
                 1.0, 0.0,
                 1.0, 1.0,
                 0.0, 1.0], 2)
+
         self.set_index([0, 1, 3, 2])
 
 
