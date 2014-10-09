@@ -69,7 +69,7 @@ class GstOpenGLEditor():
         window.connect("delete-event", self.window_closed, pipeline)
         window.connect("key-press-event", self.key_pressed, pipeline)
         window.set_default_size(width, height)
-        window.set_title("GStreamer OpenGL Editor")
+        window.set_title("VRSink Player")
 
         outer_box = Gtk.Box()
         outer_box.set_orientation(Gtk.Orientation.VERTICAL)

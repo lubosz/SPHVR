@@ -231,10 +231,6 @@ class TransformScene(Scene):
         self.graphics["video"].draw(video_texture, matrix_to_array(self.zoom_matrix))
         context.clear_shader()
 
-        if self.selected:
-            self.graphics["box"].draw(self.corner_handles)
-            self.graphics["handle"].draw_actors(self.handles)
-
         return True
 
     def get_rotation(self, event):
