@@ -25,22 +25,12 @@ class CairoGLSink(GstOverlaySink):
     def __init__(self, w, h):
         GstOverlaySink.__init__(self, "glimagesink", w, h)
 
-        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
-        self.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK)
-        self.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
-        self.add_events(Gdk.EventMask.ALL_EVENTS_MASK)
-
         self.gl_init = False
 
         self.scene = TransformScene()
 
         self.sink.connect("client-draw", self.scene.draw)
         self.sink.connect("client-reshape", self.scene.reshape)
-
-        self.connect("button-press-event", self.on_button_press)
-        self.connect("button-release-event", self.scene.on_release)
-        self.connect("motion-notify-event", self.scene.on_motion)
-        self.connect("scroll-event", self.scene.on_scroll)
 
         self.sink.handle_events(False)
 
