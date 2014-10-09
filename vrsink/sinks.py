@@ -41,23 +41,6 @@ class CairoGLSink(GstOverlaySink):
         self.pipeline = None
         self.pipeline_position = 0
 
-    def set_transformation_element(self, element):
-        self.transformation_element = element
-
-    def set_pipeline(self, pipeline):
-        self.pipeline = pipeline
-
-    def set_pipeline_position(self, position):
-        self.pipeline_position = position
-
-    def flush_seek(self):
-        self.pipeline.seek_simple(
-            Gst.Format.TIME,
-            Gst.SeekFlags.FLUSH,
-            #3 * Gst.SECOND)
-            self.pipeline_position)
-        return True
-
     def on_button_press(self, sink, event):
         self.scene.on_press(event)
 

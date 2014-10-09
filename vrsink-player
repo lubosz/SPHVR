@@ -99,7 +99,6 @@ class GstOpenGLEditor():
         window.show_all()
 
         sink.set_handle()
-        sink.set_pipeline(pipeline)
 
         if pipeline.set_state(Gst.State.PLAYING) == Gst.StateChangeReturn.FAILURE:
             pipeline.set_state(Gst.State.NULL)
@@ -112,7 +111,6 @@ class GstOpenGLEditor():
             pipeline.set_state(Gst.State.PLAYING)
         else:
             pipeline.set_state(Gst.State.PAUSED)
-            sink.set_pipeline_position(pipeline.query_position(Gst.Format.TIME)[1])
 
     @staticmethod
     def window_closed(widget, event, pipeline):
