@@ -104,6 +104,30 @@ class Transformation3DSliderBox(SliderBox):
             Slider(self, "scale-y", 0, 4, 0.1, 1),
             Slider(self, "fov", 0, 180, 0.5, 90)]
 
+        SliderBox.__init__(self, None)
+
+
+class SphereBox(SliderBox):
+    def value_changed(self, scale, property):
+        self.element.set_property(property, scale.get_value())
+
+    @staticmethod
+    def check_cb(check, element):
+        element.set_property("ortho", check.get_active())
+
+    def __init__(self):
+
+        self.sliders = [
+            Slider(self, "rotation-x", -720, 720, 1, 0),
+            Slider(self, "rotation-y", -720, 720, 1, 0),
+            Slider(self, "rotation-z", -720, 720, 1, 0),
+            Slider(self, "translation-x", -5, 5, 0.01, 0),
+            Slider(self, "translation-y", -5, 5, 0.01, 0),
+            Slider(self, "translation-z", -5, 5, 0.01, 0),
+            Slider(self, "scale-x", 0, 4, 0.1, 1),
+            Slider(self, "scale-y", 0, 4, 0.1, 1),
+            Slider(self, "fov", 0, 180, 0.5, 90)]
+
         check = Gtk.CheckButton.new_with_label("Orthographic Projection")
         check.connect("toggled", self.check_cb, element)
         self.add(check)

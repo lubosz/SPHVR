@@ -9,8 +9,8 @@ from vrsink.widgets import *
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-video_uri = "file:///home/bmonkey/workspace/ges/data/hd/Return to split point.mp4"
-
+#video_uri = "file:///home/bmonkey/workspace/ges/data/hd/Return to split point.mp4"
+video_uri = "file:///home/bmonkey/Videos/vr/Beach 3D 360 - panocam3d.com.mp4"
 
 def quit_app(widget, pipeline):
     widget.hide()
@@ -69,7 +69,7 @@ class GstOpenGLEditor():
         window.connect("delete-event", self.window_closed, pipeline)
         window.connect("key-press-event", self.key_pressed, pipeline)
         window.set_default_size(width, height)
-        window.set_title("VRSink Player")
+        window.set_title("SPHVR")
 
         outer_box = Gtk.Box()
         outer_box.set_orientation(Gtk.Orientation.VERTICAL)
@@ -80,11 +80,13 @@ class GstOpenGLEditor():
         #slider_box = Transformation2DSliderBox(transform, sink.scene)
         #slider_box = Transformation3DSliderBox(transform)
 
+        slider_box = SphereBox()
+
         #sink.scene.slider_box = slider_box
         #sink.scene.reposition(slider_box.build_mvp())
         sink.scene.window = window
 
-        #box.add(slider_box)
+        box.add(slider_box)
         box.add(sink)
 
         outer_box.add(box)

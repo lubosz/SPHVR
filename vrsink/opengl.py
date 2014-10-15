@@ -31,7 +31,7 @@ class Mesh():
 
     def draw(self):
         glDrawElements(self.type,
-                       len(self.index),
+                       1024*11,
                        GL_UNSIGNED_SHORT,
                        self.index)
 
@@ -43,7 +43,7 @@ class Mesh():
 class SphereTriangleStrip(Mesh):
     def __init__(self):
         #Mesh.__init__(self, GL_TRIANGLE_STRIP)
-        Mesh.__init__(self, GL_LINES)
+        Mesh.__init__(self, GL_TRIANGLES)
 
         stacks = 32
         slices = 32
@@ -91,7 +91,6 @@ class SphereTriangleStrip(Mesh):
                 normal = array([x - distance, y, z])
                 positions += list(normal + center)
 
-
         self.add("position", positions, 3)
         #self.add("uv", positions, 2)
 
@@ -100,12 +99,81 @@ class SphereTriangleStrip(Mesh):
         for foo in range(0, int(len(positions) / 3)):
             indices.append(foo)
 
-        print(len(positions))
-        print(len(positions) / 3)
-        print(len(indices))
+        #self.set_index(indices)
 
 
-        self.set_index(indices)
+        triangle_indices = []
+
+        # LEFT
+        for stack in range(0, stacks):
+            top = (stack + 0) * (slices + 1)
+            bot = (stack + 1) * (slices + 1)
+
+            for slice in range(0, slices):
+                if stack != 0:
+                    triangle_indices.append(top + slice)
+                    triangle_indices.append(bot + slice)
+                    triangle_indices.append(top + slice + 1)
+
+                if stack != stacks - 1:
+                    triangle_indices.append(top + slice + 1)
+                    triangle_indices.append(bot + slice)
+                    triangle_indices.append(bot + slice + 1)
+
+
+        # RIGHT
+        for stack in range(stacks, stacks * 2 - 1):
+            top = (stack + 0) * (slices + 1)
+            bot = (stack + 1) * (slices + 1)
+
+            for slice in range(0, slices):
+                if stack != 0:
+                    triangle_indices.append(top + slice)
+                    triangle_indices.append(bot + slice)
+                    triangle_indices.append(top + slice + 1)
+
+                if stack != stacks - 1:
+                    triangle_indices.append(top + slice + 1)
+                    triangle_indices.append(bot + slice)
+                    triangle_indices.append(bot + slice + 1)
+
+        #print(len(triangle_indices))
+        #print(len(indices))
+        #print(len(positions) / 3)
+
+
+
+        #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        #glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+
+        #self.set_index(indices)
+
+        # over / under uvs
+        textureCoordinates = []
+
+        #LEFT
+
+        for stack in range(0, stacks):
+            for slice in reversed(range(0, slices)):
+                textureCoordinates.append(slice / slices)
+                textureCoordinates.append(stack / stacks / 2)
+
+        # RIGHT
+        for stack in range(0, stacks):
+            for slice in reversed(range(0, slices)):
+                textureCoordinates.append(slice / slices)
+                textureCoordinates.append(0.5 + stack / stacks / 2)
+
+        self.add("uv", textureCoordinates, 2)
+
+        print("textureCoordinates/2", len(textureCoordinates)/2)
+        print("triangle_indices", len(triangle_indices))
+        print("positions/3", len(positions)/3)
+
+
+
+        self.set_index(triangle_indices)
+
 
 
 class PlaneTriangleFan(Mesh):
